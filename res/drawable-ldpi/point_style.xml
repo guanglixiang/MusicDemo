@@ -1,0 +1,27 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item 
+        android:drawable="@drawable/ic_dot_default_selected">
+        <shape>  
+            <!-- 渐变 -->  
+            <gradient  
+                android:startColor="#ff8c00"  
+                android:endColor="#FFFFFF"  
+                android:type="radial"  
+                android:gradientRadius="50" />  
+            <!-- 描边 -->  
+            <stroke  
+                android:width="2dp"  
+                android:color="#dcdcdc"  
+                android:dashWidth="5dp"   
+                android:dashGap="3dp" />  
+            <!-- 圆角 -->  
+            <corners  
+                android:radius="8dp" />  
+            <padding  
+                android:left="10dp"  
+                android:top="10dp"  
+                android:right="10dp"  
+                android:bottom="10dp" />  
+        </shape> 
+    </item> 
+</selector>

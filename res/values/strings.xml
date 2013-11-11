@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">音乐王国</string>
+    <string name="action_settings">Settings</string>
+    <string name="guide_page1">欢迎来到时尚资讯</string>
+    <string name="guide_page2">给你最新鲜的时尚资讯</string>
+    <string name="btn_close_guide">马上体验</string>
+    <string name="rightpa_top_title">时尚资讯网</string>
+     
+    <string name="local">本地音乐</string>
+    <string name="network">网络</string>
+    <string name="job">求职</string>
+    <string name="industrial_trends">趋势</string>
+    <string name="interview">人物访谈</string>
+    <string name="vedios">视频</string>
+     <string name="forum">论坛</string>
+    <string name="showdesc">正在加载图片，请稍等...</string>
+	<string name="whoami">游客</string>
+    <string-array name="left_panel_group_names">  
+        <item>常用</item>  
+        <item>更多</item>  
+        <item>设置</item>  
+    </string-array>  
+    <string-array name="left_panel_first_group_names">  
+        <item>首页</item>  
+        <item>秀场</item>  
+        <item>好友</item>  
+        <item>论坛</item>  
+    </string-array>  
+    <string-array name="left_panel_second_group_names">  
+        <item>公告</item>  
+        <item>设计</item>   
+    </string-array>  
+    <string-array name="left_panel_group_three_names">  
+        <item>收藏</item>  
+        <item>退出</item>  
+    </string-array>  
+</resources>
