@@ -11,8 +11,8 @@
     <string name="local">本地音乐</string>
     <string name="network">网络</string>
     <string name="job">求职</string>
-    <string name="industrial_trends">趋势</string>
-    <string name="interview">人物访谈</string>
+    <string name="siger">歌词</string>
+    <string name="artist">歌手</string>
     <string name="vedios">视频</string>
      <string name="forum">论坛</string>
     <string name="showdesc">正在加载图片，请稍等...</string>

@@ -4,13 +4,14 @@ import android.os.Bundle;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements LocalMusicFragment.StartPlayMusic{
 	private static long tempTime = 0;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,5 +52,12 @@ public class MainActivity extends FragmentActivity {
 			}
 		})
 		.create().show();
+	}
+
+	@Override
+	public void startPlayMusic(Cursor cursor, int position) {
+		FragmentPlay fplay = new FragmentPlay();
+		getSupportFragmentManager().beginTransaction().replace(R.id.right_fragment, fplay).commit();
+		
 	}
 }
