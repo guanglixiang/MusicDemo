@@ -14,7 +14,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-
+/**
+ * 显示本地的所有音乐文件到一个listview中
+ * @author c_kxiang
+ */
 public class LocalMusicFragment extends Fragment {
 
 

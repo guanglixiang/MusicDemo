@@ -16,3 +16,11 @@
 只要生成一个播放器的对象，再在点击事件中调用对应的方法即可。
 综上，第三种方案应该是最好的。明天争取实现。
 ===========================================================================================================================
+11/13/2013:
+fix： 昨天提到在Fragment中点击back键，直接提示要退出而不是回到生成Fragment的前一个界面问题。通过在主Activity中的onKeyDown方法中加一个
+判断，利用getSupportFragmentManager().findFragmentByTag()方法获取到Fragment并判断若不为空，则直接remove掉，然后返回。这样就不在提示
+用户退出应用了。
+在昨天的基础上还是采用了第二种方法，主要想多了解下Fragment,所以就没有建立新的Activity。现在的做法是将播放音乐主要功能放在一个Service中，
+该Service中定义MediaPlayer实现歌曲的各种播放动作，然后在主Activity中启动Service，并传递给动作参数和歌曲所在路径给Service中的Mediaplayer
+对象交由MediaPlayer处理。
+目前只实现了点击播放功能，代码也很粗糙，对Service如何和Activity 进行有效的通信还不太熟悉，得多加学习。
