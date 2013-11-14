@@ -13,6 +13,7 @@
 
         <Button
             android:id="@+id/repeat_music"
+            android:onClick="onClick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -20,6 +21,7 @@
 
         <Button
             android:id="@+id/shuffle_music"
+            android:onClick="onClick"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -139,6 +141,7 @@
 
             <Button
                 android:id="@+id/play_music"
+                android:onClick="onClick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -146,6 +149,7 @@
 
             <Button
                 android:id="@+id/next_music"
+                android:onClick="onClick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/play_music"
@@ -154,6 +158,7 @@
 
             <Button
                 android:id="@+id/previous_music"
+                android:onClick="onClick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/play_music"
@@ -162,6 +167,7 @@
 
             <Button
                 android:id="@+id/play_queue"
+                android:onClick="onClick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/next_music"
@@ -170,6 +176,7 @@
 
             <ImageButton
                 android:id="@+id/ibtn_player_voice"
+                android:onClick="onClick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 //每一个service必须要在manifest中注册
@@ -16,11 +17,12 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	private static final String PAUSE = "pause";
 	private static final String PLAY = "play";
 	private String OPERATION_MSG = "OPERATION_MSG" ;
+	private MyBinder myBinder = new MyBinder();
 	private static final String TAG = "PlayMusicService";
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return null;
+		return myBinder;
 	}
 	@Override
 	public void onCreate(){
@@ -34,7 +36,9 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 			myMediaPlayer.setOnPreparedListener(this);
 		}
 	}
-	
+	/**
+	 * 在Service一定要将MediaPlayer释放掉
+	 */
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
@@ -46,17 +50,25 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 		
 	}
 	
-	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		//根据传进来的参数，执行对应的播放动作。
 		Log.d(TAG, " PlayMusicService onStartCommand");
 		Log.d(TAG, " PlayMusicService onStartCommand OPERATION_MSG="+intent.getStringExtra(OPERATION_MSG));
-		if(PLAY.equals(intent.getStringExtra(OPERATION_MSG))){
+		String OP = intent.getStringExtra(OPERATION_MSG);
+		if(PLAY.equals(OP)){
 			String path = intent.getStringExtra("path");
 			PlayMusic(path);
+		}else if (PAUSE.equals(OP)) {
+			if (myMediaPlayer.isPlaying()) {
+				Log.d(TAG, " PlayMusicService start---->pause");
+				myMediaPlayer.pause();
+			}else {
+				Log.d(TAG, " PlayMusicService PAUSE-->start");
+				myMediaPlayer.start();
+			}
 			
-		} 
+		}
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
@@ -89,6 +101,10 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	public void onPrepared(MediaPlayer mp) {
 		Log.d(TAG, "onPrepared===");
 		myMediaPlayer.start();
+	}
+	
+	public class MyBinder extends Binder{
+		
 	}
 
 }
