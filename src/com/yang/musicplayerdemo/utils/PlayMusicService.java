@@ -12,8 +12,6 @@ import android.util.Log;
 //每一个service必须要在manifest中注册
 public class PlayMusicService extends Service implements OnCompletionListener,OnPreparedListener{
 	public static MediaPlayer myMediaPlayer = null;
-	private static final String NEXT = "next";
-	private static final String LAST = "last";
 	private static final String PAUSE = "pause";
 	private static final String PLAY = "play";
 	private String OPERATION_MSG = "OPERATION_MSG" ;
@@ -26,7 +24,7 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	}
 	@Override
 	public void onCreate(){
-		Log.d(TAG, " PlayMusicService onCreate");
+		Log.d(TAG, " ------------------>PlayMusicService onCreate");
 		super.onCreate();
 		if (myMediaPlayer!=null) {
 			myMediaPlayer.reset();
@@ -41,6 +39,7 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	 */
 	@Override
 	public void onDestroy(){
+		Log.d(TAG, " ------------------>PlayMusicService onDestroy");
 		super.onDestroy();
 		if (myMediaPlayer!=null) {
 			myMediaPlayer.stop();
@@ -51,28 +50,10 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		//根据传进来的参数，执行对应的播放动作。
-		Log.d(TAG, " PlayMusicService onStartCommand");
-		Log.d(TAG, " PlayMusicService onStartCommand OPERATION_MSG="+intent.getStringExtra(OPERATION_MSG));
-		String OP = intent.getStringExtra(OPERATION_MSG);
-		if(PLAY.equals(OP)){
-			String path = intent.getStringExtra("path");
-			PlayMusic(path);
-		}else if (PAUSE.equals(OP)) {
-			if (myMediaPlayer.isPlaying()) {
-				Log.d(TAG, " PlayMusicService start---->pause");
-				myMediaPlayer.pause();
-			}else {
-				Log.d(TAG, " PlayMusicService PAUSE-->start");
-				myMediaPlayer.start();
-			}
-			
-		}
-		return super.onStartCommand(intent, flags, startId);
+	public boolean onUnbind(Intent intent) {
+		Log.d(TAG, "--------------> PlayMusicService onUnbind");
+		return super.onUnbind(intent);
 	}
-	
-	
 	private void PlayMusic(String path) {
 		myMediaPlayer.reset();
 		Log.d(TAG, "myMediaPlay==="+myMediaPlayer);
@@ -94,7 +75,7 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 		}
 	}
 	@Override
-	public void onCompletion(MediaPlayer arg0) {
+	public void onCompletion(MediaPlayer mediaPlayer) {
 		
 	}
 	@Override
@@ -104,7 +85,21 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	}
 	
 	public class MyBinder extends Binder{
-		
+		public void operateMusic(Intent intent) {
+			String OP = intent.getStringExtra(OPERATION_MSG);
+			if(PLAY.equals(OP)){
+				String path = intent.getStringExtra("path");
+				PlayMusic(path);
+			}else if (PAUSE.equals(OP)) {
+				if (myMediaPlayer.isPlaying()) {
+					Log.d(TAG, " PlayMusicService start---->pause");
+					myMediaPlayer.pause();
+				}else {
+					Log.d(TAG, " PlayMusicService PAUSE-->start");
+					myMediaPlayer.start();
+				}
+			}
+		}
 	}
 
 }

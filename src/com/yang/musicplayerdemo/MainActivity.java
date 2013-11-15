@@ -40,15 +40,15 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 	private static final String LAST = "last";
 	private static final String PAUSE = "pause";
 	private static final String PLAY = "play";
+	/**
+	 * Service中onBind方法返回的对象。
+	 */
 	private PlayMusicService.MyBinder myBinder;
+	
 	private ServiceConnection connection = new ServiceConnection() {
-		
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-			
 		}
-		
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			myBinder = (PlayMusicService.MyBinder) service;
@@ -63,6 +63,11 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		RightFragment fragment = new RightFragment();
 		fragmentTransaction.add(R.id.right_fragment, fragment).commit();
+		/**
+		 * 绑定播放的Service，只需要一次。
+		 */
+		Intent intent = new Intent(MainActivity.this,PlayMusicService.class);
+		bindService(intent, connection, BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -92,6 +97,7 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				unbindService(connection);
 				MainActivity.this.finish();
 			}
 		})
@@ -108,12 +114,9 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 	public void startPlayMusic(Cursor cursor, int position) {
 		//点击listview 中的某个item，开始播放音乐
 		currentPosition = position;
-		Log.d("PlayMusicService", "startPlayMusic currentPosition="+currentPosition);
 		mycursor = cursor;
 		musicCount = mycursor.getCount();
-		mycursor.moveToPosition(position);
-		String storagePath = mycursor.getString(mycursor.getColumnIndexOrThrow(Audio.Media.DATA));
-		playMusic(PLAY,storagePath);
+		playMusic(PLAY,getMusicPath(mycursor,currentPosition));
 		FragmentPlayController fplay = new FragmentPlayController();
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 		//fragmentTransaction.setCustomAnimations(R.anim.playfragment_over, R.anim.playfragment_start);
@@ -125,34 +128,36 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 		Intent intent = new Intent(MainActivity.this,PlayMusicService.class);
 		intent.putExtra("OPERATION_MSG", op);
 		intent.putExtra("path", path);
-		startService(intent);
+		myBinder.operateMusic(intent);
 	}
-
+	private String getMusicPath(Cursor cursor,int index){
+		cursor.moveToPosition(index);
+		String musicpath = cursor.getString(cursor.getColumnIndexOrThrow(Audio.Media.DATA));
+		return musicpath;
+		
+	}
+	/**
+	 * 响应播放界面的各种button点击事件。需要在布局xml里面加上onClick属性
+	 * @param view
+	 */
 	public void onClick(View view) {	
 		switch (view.getId()) {
 		case R.id.play_music:
 			playMusic(PAUSE, "");
 			break;
 		case R.id.next_music:
-			String storagePath;
-			Log.d("PlayMusicService", "--------currentPosition="+currentPosition);
 			if (++currentPosition>=musicCount) {
 				currentPosition = musicCount-1;
 				Toast.makeText(this, "你妹啊，已经最后一首了，还按？找发泄呢？", Toast.LENGTH_SHORT).show();
 			}
-			Log.d("PlayMusicService", "currentPosition="+currentPosition);
-			mycursor.moveToPosition(currentPosition);
-			storagePath = mycursor.getString(mycursor.getColumnIndexOrThrow(Audio.Media.DATA));
-			playMusic(PLAY,storagePath);
+			playMusic(PLAY,getMusicPath(mycursor,currentPosition));
 			break;
 		case R.id.previous_music:
 			if (--currentPosition<0) {
 				currentPosition = 0;
 				Toast.makeText(this, "已经是第一首了，亲，不要在按我了", Toast.LENGTH_SHORT).show();
 			}
-			mycursor.moveToPosition(currentPosition);
-			storagePath = mycursor.getString(mycursor.getColumnIndexOrThrow(Audio.Media.DATA));
-			playMusic(PLAY,storagePath);
+			playMusic(PLAY,getMusicPath(mycursor,currentPosition));
 			break;
 		case R.id.play_queue:
 			
@@ -170,6 +175,5 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 		default:
 			break;
 		}
-		
 	}
 }

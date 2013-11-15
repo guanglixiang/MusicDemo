@@ -32,3 +32,10 @@ Fragment想要获取歌曲路径参数，必须得获取Cursor,或者通过Activ
 布局文件是由Fragment加载的。但其响应却是在Fragment所属的Activity里面响应。Fragment无法获取到，具体原因不清楚。
 没有实现Service和Activiy的绑定，现在即使Acitvity退出，歌曲依然在播放，即Service依然在运行,明天实现绑定功能。
 ===========================================================================================================================
+11/15/2013
+实现绑定Service到Activity的功能。大致步骤如下：
+Service:1.定义一个类MyBinder在里面写上操作音乐播放器的方法---->覆写onBind方法，返回一个MyBinder的实例。
+Activity:1.建立一个ServiceConnection的类，覆写里面的两个方法，并通过转型得到MyBinder的实例----->通过bindService方法绑定Service---->
+在Activity中调用MyBinder里面定义的方法。 注意，Service只需要绑定一次即可，且绑定在先，调用在后，否则会引起空指针异常。因而把bindService
+方法放在了onCreate方法中。
+目前还卡在如何实现自动播放下一首，如何单曲、随机、顺序播放功能。估计要用到BroadCast
