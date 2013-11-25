@@ -1,12 +1,10 @@
 package com.yang.musicplayerdemo;
 
-import android.R.integer;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

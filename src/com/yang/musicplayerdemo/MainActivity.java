@@ -8,9 +8,12 @@ import android.os.IBinder;
 import android.provider.MediaStore.Audio;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
@@ -19,11 +22,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements LocalMusicFragment.StartPlayMusic{
 	private static long tempTime = 0;
-	private MediaPlayer mediaPlayer;
 	/*
 	 * 当前播放的歌曲所在位置
 	 */
@@ -36,6 +39,12 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 	 * 存放歌曲的Cursor
 	 */
 	private static Cursor mycursor = null;
+	/**
+	 * 音乐时长
+	 */
+	public static  String formattime;
+	
+	private static FragmentPlayController fplay;
 	private static final String NEXT = "next";
 	private static final String LAST = "last";
 	private static final String PAUSE = "pause";
@@ -58,7 +67,6 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mediaPlayer = new MediaPlayer();
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		RightFragment fragment = new RightFragment();
@@ -67,6 +75,7 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 		 * 绑定播放的Service，只需要一次。
 		 */
 		Intent intent = new Intent(MainActivity.this,PlayMusicService.class);
+		
 		bindService(intent, connection, BIND_AUTO_CREATE);
 	}
 
@@ -116,12 +125,11 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 		currentPosition = position;
 		mycursor = cursor;
 		musicCount = mycursor.getCount();
-		playMusic(PLAY,getMusicPath(mycursor,currentPosition));
-		FragmentPlayController fplay = new FragmentPlayController();
+		fplay = new FragmentPlayController();
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 		//fragmentTransaction.setCustomAnimations(R.anim.playfragment_over, R.anim.playfragment_start);
 		fragmentTransaction.replace(R.id.right_fragment, fplay,"fp").commit();
-		
+		playMusic(PLAY,getMusicPath(mycursor,currentPosition));
 	}
 
 	private void playMusic(String op,String path) {
@@ -133,8 +141,19 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 	private String getMusicPath(Cursor cursor,int index){
 		cursor.moveToPosition(index);
 		String musicpath = cursor.getString(cursor.getColumnIndexOrThrow(Audio.Media.DATA));
+		int time = cursor.getInt(cursor.getColumnIndexOrThrow(Audio.Media.DURATION))/1000;
+		formattime = time/60+":"+time%60;
+		//fplay.onShow(formattime);
 		return musicpath;
 		
+	}
+	
+	private void playNext(){
+		if (++currentPosition>=musicCount) {
+			currentPosition = musicCount-1;
+			Toast.makeText(this, "你妹啊，已经最后一首了，还按？找发泄呢？", Toast.LENGTH_SHORT).show();
+		}
+		playMusic(PLAY,getMusicPath(mycursor,currentPosition));
 	}
 	/**
 	 * 响应播放界面的各种button点击事件。需要在布局xml里面加上onClick属性
@@ -146,11 +165,7 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 			playMusic(PAUSE, "");
 			break;
 		case R.id.next_music:
-			if (++currentPosition>=musicCount) {
-				currentPosition = musicCount-1;
-				Toast.makeText(this, "你妹啊，已经最后一首了，还按？找发泄呢？", Toast.LENGTH_SHORT).show();
-			}
-			playMusic(PLAY,getMusicPath(mycursor,currentPosition));
+			playNext();
 			break;
 		case R.id.previous_music:
 			if (--currentPosition<0) {
@@ -176,4 +191,38 @@ public class MainActivity extends FragmentActivity implements LocalMusicFragment
 			break;
 		}
 	}
+	/**
+	 * 取消注册的广播
+	 */
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unregisterReceiver(mBroadcastReceiver);
+	}
+	/**
+	 * 注册广播，用来接收歌曲播放完成后Service发送的广播
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		IntentFilter myIntentFilter = new IntentFilter();
+		myIntentFilter.addAction("complete_play");
+		registerReceiver(mBroadcastReceiver, myIntentFilter);
+		
+	}
+
+	/**
+	 * 定义一个广播，在一首歌播放完成之后，发送广播给Activity，自动播放下一首
+	 */
+	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver(){
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if(action.equals("complete_play")){
+				playNext();
+			}
+		}
+		
+	};
 }

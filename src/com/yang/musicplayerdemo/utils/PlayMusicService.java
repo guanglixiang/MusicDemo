@@ -1,6 +1,9 @@
 package com.yang.musicplayerdemo.utils;
 
 import java.io.IOException;
+
+import com.yang.musicplayerdemo.FragmentPlayController;
+
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -9,6 +12,8 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+
+
 //每一个service必须要在manifest中注册
 public class PlayMusicService extends Service implements OnCompletionListener,OnPreparedListener{
 	public static MediaPlayer myMediaPlayer = null;
@@ -16,6 +21,7 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	private static final String PLAY = "play";
 	private String OPERATION_MSG = "OPERATION_MSG" ;
 	private MyBinder myBinder = new MyBinder();
+	private static final String ACTION_NAME = "complete_play";
 	private static final String TAG = "PlayMusicService";
 
 	@Override
@@ -76,7 +82,8 @@ public class PlayMusicService extends Service implements OnCompletionListener,On
 	}
 	@Override
 	public void onCompletion(MediaPlayer mediaPlayer) {
-		
+		Intent intent = new Intent(ACTION_NAME);
+		sendBroadcast(intent);
 	}
 	@Override
 	public void onPrepared(MediaPlayer mp) {
